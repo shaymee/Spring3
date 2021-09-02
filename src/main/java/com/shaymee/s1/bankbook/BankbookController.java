@@ -1,7 +1,10 @@
 package com.shaymee.s1.bankbook;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,45 +12,44 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-@Controller// bankbookController의 객체를 대신만들어달라는 어노테이션
+@Controller
 @RequestMapping("/bankbook/*")
 public class BankbookController {
-	//pojo (Plain Old Java Object: 어떤 외부Library도 상속받지 않은 순수한 Java 클래스)
 	
-	@RequestMapping(value="bankbookList.do", method=RequestMethod.GET)
-	public ModelAndView list(Integer[] num, ModelAndView mv) {
-		for(Integer i : num) {
-			System.out.println(i);
-		}
-		System.out.println("This page is Bankbook List");
-		
-		ModelAndView mv2 = new ModelAndView();
-		mv2.setViewName("bankbook/bankbookList");
-		
-		return mv2;
+	@Autowired
+	private BankbookService bankbookService;
+	
+	@RequestMapping("bankbookList")
+	public ModelAndView list(ModelAndView mv) {
+		List<BankbookDTO> ar = bankbookService.getList();
+		mv.addObject("list", ar);
+		mv.setViewName("bankbook/bankbookList"); // "mv.setViewName을 통해 jsp의 경로를 적어주세요"
+		return mv;
 	}
 	
 	@RequestMapping("bankbookSelect")
-	public void select(@RequestParam(defaultValue="1", value = "n") Integer[] num, Model model) {
-		System.out.println("This page is Bankbook Select");
-//		String value = request.getParameter("num"); // "num"이라고 보내는 parameter값을 받기
-		System.out.println("Value : "+num);
-		System.out.println("Name : ");
-		BankbookDTO bankbookDTO = new BankbookDTO();
-		bankbookDTO.setBookName("아프니까청춘이다ㅋㅋ");
-		model.addAttribute("test", "iu");//@@ 매개변수로 선언해주면 return 안해도 같이 넘어감!!
-		model.addAttribute("bookName", bankbookDTO);
+	public void select(BankbookDTO bankbookDTO, Model model) { //void라고 하면 어떤 jsp를 찾아가는지? 요청한 URL을 경로로 삼는다
+		bankbookDTO = bankbookService.getSelect(bankbookDTO);
+		model.addAttribute("dtov", bankbookDTO);
 		
-//		return "bankbook/bankbookSelect";
-// 		return을 void로 했을 땐 요청uri가 view의 경로명이 됨+return을 안해줘도 됨		
+		//controller의 메서드의 return은 ModelAndView 객체로 만들어서 감
 	}
 	
-	@RequestMapping("bankbookInsert.do")
+	@RequestMapping(value="bankbookInsert", method = RequestMethod.GET)
+	public void insert() {}
+	
+	@RequestMapping(value="bankbookInsert", method = RequestMethod.POST)
 	public String insert(BankbookDTO bankbookDTO) {
-		System.out.println(bankbookDTO.getBookName());
-		System.out.println("insert");			
-		return "redirect:../?num=1"; //redirect도 주소창에 직접 쳐서 들어오는 방식이기에 get방식임
-									// parameter도 미리줘서 보낼 수 있음
+		int result = bankbookService.setInsert(bankbookDTO);
+		
+		return "redirect:./bankbookList";
+	}
+	
+	@RequestMapping(value="bankbookDelete")
+	public String delete(Long bookNumber) {
+		int result = bankbookService.setDelete(bookNumber);
+		
+		return "redirect:./bankbookList";
 	}
 	
 }
