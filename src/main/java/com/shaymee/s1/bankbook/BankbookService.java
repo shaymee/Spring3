@@ -30,8 +30,10 @@ public class BankbookService {
 	
 	///// getList /////
 	public List<BankbookDTO> getList(Pager pager){ //service메서드의 역할 - 전처리and후처리 작업
+		System.out.println("kind: "+pager.getKind());
+		System.out.println("search: "+pager.getSearch());
 		//totalCount 구해오기
-		Long totalCount = bankbookDAO.getTotalCount();
+		Long totalCount = bankbookDAO.getTotalCount(pager);
 		pager.makeNum(totalCount);
 		pager.makeRow();
 		

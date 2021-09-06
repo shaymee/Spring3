@@ -42,8 +42,8 @@ public class BankbookDAO {
 	}
 	
 	//// totalCount 구해오기 ////
-	public Long getTotalCount() { // Mapper의 id 속성은 DAO의 method명과 동일하게 설정
-		Long result = sqlSession.selectOne(NAMESPACE+"getTotalCount");
+	public Long getTotalCount(Pager pager) { // Mapper의 id 속성은 DAO의 method명과 동일하게 설정
+		Long result = sqlSession.selectOne(NAMESPACE+"getTotalCount", pager);
 		
 		return result;
 	}

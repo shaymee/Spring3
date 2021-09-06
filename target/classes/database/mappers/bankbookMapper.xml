@@ -17,8 +17,25 @@
 			(SELECT rownum R, BK.* FROM 
 				(SELECT * 
 			     FROM BANKBOOK
+			     WHERE
+			     
+			     <choose>
+			     	<when test="kind == 'num'">
+			     		BOOKNUMBER
+			     	</when>
+			     	
+			     	<when test="kind == 'name'">
+			     		BOOKNAME
+			     	</when>
+			     	
+			     	<otherwise>
+			     		BOOKRATE
+			     	</otherwise>
+			     </choose> 
+			     
+			     LIKE '%' || #{search} || '%'   <!-- || : Oracle에서 더하기 하는 연결 연산자 -->
 			     ORDER BY BOOKNUMBER DESC) BK)            
-		WHERE R BETWEEN #{startRow} AND #{lastRow}
+		WHERE R BETWEEN #{startRow} AND #{lastRow} <!-- #{GETTER호출} -->
   	</select>
   	
   	<!-- ${bookNumber}==>getter의 get을 뺀 이름(첫글자 소문자) == 멤버변수명 == parameter명 -->
@@ -35,8 +52,26 @@
   		DELETE BANKBOOK WHERE BOOKNUMBER = #{bookNumber} <!-- 멤버변수가 없을 땐, DAO에서 넘어오는 변수명을 활용(ex. Long bookNumber) -->
   	</delete>
   	
-  	<select id="getTotalCount" resultType="java.lang.Long">
+  	<select id="getTotalCount" resultType="java.lang.Long" parameterType="com.shaymee.s1.util.Pager">
   		SELECT COUNT(BOOKNUMBER) FROM BANKBOOK
+  		WHERE
+			     
+			     <choose>
+			     	<when test="kind == 'num'">
+			     		BOOKNUMBER
+			     	</when>
+			     	
+			     	<when test="kind == 'name'">
+			     		BOOKNAME
+			     	</when>
+			     	
+			     	<otherwise>
+			     		BOOKRATE
+			     	</otherwise>
+			     </choose> 
+			     
+			     LIKE '%' || #{search} || '%'   <!-- || : Oracle에서 더하기 하는 연결 연산자 -->
+			     
   	</select>
   	
   </mapper>
