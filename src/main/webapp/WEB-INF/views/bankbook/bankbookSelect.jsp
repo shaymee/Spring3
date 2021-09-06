@@ -25,6 +25,7 @@
 				</tr>
 		</table>
 		<a href="./bankbookDelete?bookNumber=${dtov.bookNumber}" class="btn btn-dark">Delete</a>
+		<a href="./bankbookUpdate?bookNumber=${dtov.bookNumber}" class="btn btn-danger">Update</a>
 	</div>
 </p>
 </body>

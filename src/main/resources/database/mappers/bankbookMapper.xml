@@ -5,10 +5,23 @@
   
   <mapper namespace="com.shaymee.s1.bankbook.BankbookDAO">
   
-  	<select id="getList" resultType="com.shaymee.s1.bankbook.BankbookDTO"> <!-- ?가 없으므로 ParameterType은 없어도 됨 -->
-  		SELECT * FROM BANKBOOK
+  
+  	<update id="setUpdate" parameterType="com.shaymee.s1.bankbook.BankbookDTO">
+  		UPDATE BANKBOOK SET BOOKNAME=#{bookName}, BOOKRATE=#{bookRate}, BOOKSALE=#{bookSale}
+  		WHERE BOOKNUMBER = #{bookNumber}
+  	</update>
+  	
+  	<!-- id는 DAO의 메소드명과 동일하게 -->
+  	<select id="getList" resultType="com.shaymee.s1.bankbook.BankbookDTO" parameterType="com.shaymee.s1.util.Pager"> <!-- ?가 없으므로 ParameterType은 없어도 됨 -->
+		SELECT * FROM  <!-- 쿼리문에서 쓰는 데이터를 보내주는 것=>parameterType(변수를 하나밖에 못씀) -->
+			(SELECT rownum R, BK.* FROM 
+				(SELECT * 
+			     FROM BANKBOOK
+			     ORDER BY BOOKNUMBER DESC) BK)            
+		WHERE R BETWEEN #{startRow} AND #{lastRow}
   	</select>
   	
+  	<!-- ${bookNumber}==>getter의 get을 뺀 이름(첫글자 소문자) == 멤버변수명 == parameter명 -->
   	<select id="getSelect" parameterType="com.shaymee.s1.bankbook.BankbookDTO" resultType="com.shaymee.s1.bankbook.BankbookDTO"> <!-- parameterType: ?에 들어가는 데이터의 타입을 풀패키지명으로 적으란 뜻 -->
   		SELECT * FROM BANKBOOK WHERE BOOKNUMBER = #{bookNumber}
   	</select>
@@ -21,5 +34,9 @@
   	<delete id="setDelete" parameterType="java.lang.Long"> <!-- 공부를 위해 DTO가 아닌 Long타입 숫자를 parameter로 받는다고 상정 -->
   		DELETE BANKBOOK WHERE BOOKNUMBER = #{bookNumber} <!-- 멤버변수가 없을 땐, DAO에서 넘어오는 변수명을 활용(ex. Long bookNumber) -->
   	</delete>
+  	
+  	<select id="getTotalCount" resultType="java.lang.Long">
+  		SELECT COUNT(BOOKNUMBER) FROM BANKBOOK
+  	</select>
   	
   </mapper>
